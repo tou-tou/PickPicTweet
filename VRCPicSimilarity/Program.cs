@@ -7,13 +7,21 @@ using VRCPicSimilarity;
 PicSimilarity ps = new PicSimilarity();
 var prjPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())));
 Console.WriteLine(prjPath);
-var path = Path.GetFullPath(prjPath + @"\SamplePic\4.png");
-Console.WriteLine(path);
-Bitmap img = new Bitmap(path);
-var format = img.RawFormat;
-var reducedImg = ps.ReduceSize(img);
-var grayImg = ps.ReduceColor(reducedImg);
-var hash = ps.ComputeAdjacentPixelDiff(grayImg);
-Console.WriteLine(ps.UInt64ToBinary(hash));
-grayImg.Save(prjPath + @"\output\3.png",format);
 
+//Console.WriteLine(ps.UInt64ToBinary(hash));
+
+var path1 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_00-05-08.406.png");
+var path2 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_23-04-43.397.png");
+var path3 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_23-04-44.848.png");
+
+// img2とimg3は似ている画像
+var img1 = new Bitmap(path1);
+var img2 = new Bitmap(path2);
+var img3 = new Bitmap(path3);
+
+var result1 = ps.ComputeHammingDistance(img1, img2);
+var result2 = ps.ComputeHammingDistance(img2, img3);
+
+
+Console.WriteLine(result1);
+Console.WriteLine(result2);
