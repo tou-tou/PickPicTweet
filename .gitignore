@@ -51,3 +51,6 @@ sysinfo.txt
 # Pictures
 VRCPicSimilarity/OutputPic/*.png
 VRCPicSimilarity/SamplePic/*.png
+
+# config
+VRCPicSimilarity/appsettings.json
