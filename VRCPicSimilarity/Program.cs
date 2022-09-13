@@ -25,3 +25,8 @@ var result2 = ps.ComputeHammingDistance(img2, img3);
 
 Console.WriteLine(result1);
 Console.WriteLine(result2);
+
+var tw = new Twitter();
+//tw.TextTweet("test from c#");
+// 画像付きツイート
+tw.ImageTweet("test",path1,path2);
