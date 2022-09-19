@@ -22,7 +22,12 @@ var img3 = new Bitmap(path3);
 var result1 = ps.ComputeHammingDistance(img1, img2);
 var result2 = ps.ComputeHammingDistance(img2, img3);
 
+// 最近の画像100を取得
 
+// 最近投稿した画像を取り除く(twitter orローカルテキストから)
+
+
+// ツイート
 Console.WriteLine(result1);
 Console.WriteLine(result2);
 
