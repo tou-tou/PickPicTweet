@@ -16,14 +16,14 @@ public class PicEveryDay
                 if (!Directory.Exists(destDir))
                 {
                     Directory.CreateDirectory(destDir);
-                    if (!File.Exists(destFilePath))
+                    if (!File.Exists(destFilePath) && fileInfo.Extension == ".png")
                     {
                         fileInfo.MoveTo(destFilePath);
                     }
                 }
                 else
                 {
-                    if (!File.Exists(destFilePath))
+                    if (!File.Exists(destFilePath) && fileInfo.Extension == ".png")
                     {
                         fileInfo.MoveTo(destFilePath);
                     }
