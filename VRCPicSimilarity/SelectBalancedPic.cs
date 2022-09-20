@@ -82,7 +82,7 @@ public class SelectBalancedPic
         Sort();
         // 最近の画像をランダムに1つ取り出しリストから消す
         var random = new Random();
-        var recentPaths = _paths.GetRange(0, 10);
+        var recentPaths = _paths.GetRange(0, _paths.Count/3);
         var path1= recentPaths[random.Next(recentPaths.Count)];
         // 元のリストから最近の画像を消す
         _paths.Remove(path1);
