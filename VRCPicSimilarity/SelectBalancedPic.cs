@@ -46,14 +46,21 @@ public class SelectBalancedPic
     {
         if (_paths.Count == 0) return "";
         var pivotImage = new Bitmap(pivot);
+        // 削除用のリスト
+        var removePaths = new List<string>();
         foreach (var path in _paths)
         {
             var img = new Bitmap(path);
             var d = _ps.ComputeHammingDistance(pivotImage, img);
             if (d <= threshold)
             {
-                _paths.Remove(path);
+                removePaths.Add(path);
             }
+        }
+        // 元のリストから削除
+        foreach (var path in removePaths)
+        {
+            _paths.Remove(path);
         }
         
         var random = new Random();
