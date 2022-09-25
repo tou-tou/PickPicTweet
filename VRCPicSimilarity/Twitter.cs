@@ -42,7 +42,7 @@ public class Twitter
     /// </summary>
     /// <param name="text"></param>
     /// <param name="paths"></param>
-    public void ImageTweet(string text, params string[] paths)
+    public void ImageTweet(string text, List<string> paths)
     {
         //画像をアップロードして帰ってきたmedia_idを追加する
         var mediaIds = paths.Select(UploadImage).ToList();
