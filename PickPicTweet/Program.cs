@@ -1,9 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-
-
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using VRCPicSimilarity;
+using PickPicTweet;
 
 PicSimilarity ps = new PicSimilarity();
 var prjPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())));

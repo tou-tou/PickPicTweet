@@ -1,7 +1,7 @@
 ﻿using CoreTweet;
 using Microsoft.Extensions.Configuration;
 
-namespace VRCPicSimilarity;
+namespace PickPicTweet;
 
 public class Twitter
 {
