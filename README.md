@@ -1,4 +1,4 @@
-# PickPicTweet(工事中)
+# PickPicTweet(開発中)
 VRChatで撮影した写真を保存したフォルダを読み込み、時間と絵柄を考慮していい感じに写真を4枚を選んでTwitterに投稿するアプリケーションです。
 Windowsのタスクスケジューラーで実行ファイルを登録すると定期的に実行できます
 
@@ -11,3 +11,7 @@ Windowsのタスクスケジューラーで実行ファイルを登録すると�
 - [Twitter開発者プラットフォーム](https://developer.twitter.com/ja/docs/twitter-ads-api/getting-started)で開発者用トークンを申請して取得する。
 - `appsettings_sample.json`を参考に`appsettings.json`を作成し取得したトークンを設定する
 - Windowsタスクスケジューラーに日時や実行ファイルを指定する
+
+## 実行時オプション
+- `--full-path "画像が含まれるフォルダのフルパス"`デフォルトはVRChatの画像フォルダ
+- `--is-everyday-dir 1`1にすると画像を月別/日付別のフォルダに振り分ける

@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace VRCPicSimilarity;
+namespace PickPicTweet;
 
 /// <summary>
 /// 最大100枚の画像から撮影時刻と見た目を考慮してバランスよく最大4枚の画像を選ぶ

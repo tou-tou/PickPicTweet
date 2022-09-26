@@ -1,4 +1,4 @@
-﻿namespace VRCPicSimilarity;
+﻿namespace PickPicTweet;
 
 public class PicEveryDay
 {

@@ -1,69 +1,60 @@
 ﻿// See https://aka.ms/new-console-template for more information
-
-
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using VRCPicSimilarity;
+using PickPicTweet;
 
 PicSimilarity ps = new PicSimilarity();
 var prjPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())));
 
-//Console.WriteLine(ps.UInt64ToBinary(hash));
+// 実行時引数の処理
+// --full-path 
+// --is-everyday-dir
 
-// ソースディレクトリ以下のpictureを日付別で割り振る
+
+var argIndexFullPath = Array.IndexOf(args, "--full-path");
+var argIndexIsEverydayDir = Array.IndexOf(args, "--is-everyday-dir");
+
+// デフォルトはVRChatを想定
+var sourceDir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
+var flag1
+ = argIndexFullPath > 0 && argIndexIsEverydayDir + 1 < args.Length && Directory.Exists(args[argIndexFullPath+1]);
+if (flag1)
+{
+ sourceDir = args[argIndexFullPath + 1];
+}
+
+
+//var sourceDir = prjPath + @"\SamplePic";
+
 // VRChatの場合、 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
 //var vrcPicDir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
-var sampleDir = prjPath + @"\SamplePic";
-var ped = new PicEveryDay();
-ped.Distribute(sampleDir);
 
+
+// ソースディレクトリ以下のpictureを日付別で割り振る
+var flag2 = argIndexIsEverydayDir > 0 && argIndexIsEverydayDir + 1 < args.Length &&
+           args[argIndexIsEverydayDir + 1] == "1";
+if (flag2)
+{
+ var ped = new PicEveryDay();
+ ped.Distribute(sourceDir);
+}
 
 /*
  * ソースディレクトリ配下の最近の画像100枚を取得
  */
-
 const int fileCount = 100;
+// サブディレクトリを含むすべてのpngファイルパスを取得して作成日で並び替え
+var filePaths = Directory.GetFiles(sourceDir, "*.png", SearchOption.AllDirectories)
+ .Where(filePath => true /* 特定のファイルは除く */).OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
 
-
-// ディレクトリ直下のpngファイルを取得
-var di = new DirectoryInfo(prjPath+@"\SamplePic");
-// サブディレクトリを含むすべてのファイル一覧の場合はオプションに、"SearchOption.AllDirectories"を追加
-var fileOptions = di.GetFiles("*.png");
-var sourceFiles = new List<string>();
-foreach (var fileInfo in fileOptions) {
- sourceFiles.Add(fileInfo.FullName);
-}
-
-// ソースディレクトリ直下のディレクトリ直下のpngファイルを取得
-var subDirNames = new List<string>();
-var subDirs = di.GetDirectories();
-foreach (var dir in subDirs)
-{
- subDirNames.Add(dir.FullName);
-}
-subDirNames.Sort();
-subDirNames.Reverse();
-
-foreach (var dirName in subDirNames)
-{
- if (sourceFiles.Count > fileCount) break;
- var subDi = new DirectoryInfo(dirName);
- var subFileOptions = subDi.GetFiles("*.png");
- foreach (var fi in subFileOptions)
- {
-  if (sourceFiles.Count > fileCount) break;
-  sourceFiles.Add(fi.FullName);
- }
-}
+filePaths = filePaths.GetRange(0, fileCount);
 
 // 最近投稿した画像をローカルテキストから取得
-var outputPath = prjPath + @"\output_path.txt";
+var outputPath = @"output_path.txt";
 var postPaths = new List<string>();
 
 if (!File.Exists(outputPath)) using (File.Create(outputPath)){}
 using (var  sr = new StreamReader(outputPath))
 {
- var line = "";
+ string line;
  while ((line = sr.ReadLine()) != null)
  {
   postPaths.Add(line);
@@ -72,18 +63,18 @@ using (var  sr = new StreamReader(outputPath))
 // 最近投稿した画像パスを削除
 foreach (var path in postPaths)
 {
- sourceFiles.Remove(path);
+ filePaths.Remove(path);
 }
 
 // 撮影時刻と見た目を考慮した画像を4枚選ぶ
-var sbp = new SelectBalancedPic(sourceFiles);
+var sbp = new SelectBalancedPic(filePaths);
 //距離15だと似た画像が出現する
 var balancedPics =sbp.Pick(20);
 
 var tw = new Twitter();
 //tw.TextTweet("test from c#");
 // 画像付きツイート
-tw.ImageTweet("test",balancedPics);
+//tw.ImageTweet("test",balancedPics);
 
 
 // 今までに投稿した画像パスを100個保存
@@ -91,7 +82,7 @@ tw.ImageTweet("test",balancedPics);
 postPaths.AddRange(balancedPics);
 if (postPaths.Count > 100) postPaths = postPaths.GetRange(postPaths.Count - 100, 100);
 // テキストをすべて上書き
-using (var writer=new StreamWriter(prjPath+@"\output_path.txt",false))
+using (var writer=new StreamWriter(@"output_path.txt",false))
 {
  foreach (var path in postPaths)
  {
@@ -104,6 +95,7 @@ using (var writer=new StreamWriter(prjPath+@"\output_path.txt",false))
  * 以下動作確認用のコード
  */
  
+//Console.WriteLine(args[0]);
 // var path1 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_00-05-08.406.png");
 // var path2 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_23-04-43.397.png");
 // var path3 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_23-04-44.848.png");

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRCPicSimilarity", "VRCPicSimilarity\VRCPicSimilarity.csproj", "{10802939-AF92-4A8B-B984-0C506DDE9A9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PickPicTweet", "PickPicTweet\PickPicTweet.csproj", "{10802939-AF92-4A8B-B984-0C506DDE9A9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

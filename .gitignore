@@ -47,12 +47,12 @@ sysinfo.txt
 *.unitypackage
 
 # Pictures
-VRCPicSimilarity/OutputPic/*.png
-VRCPicSimilarity/SamplePic/*.png
-VRCPicSimilarity/SamplePic/**/*.png
+PickPicTweet/OutputPic/*.png
+PickPicTweet/SamplePic/*.png
+PickPicTweet/SamplePic/**/*.png
 
 # config
-VRCPicSimilarity/appsettings.json
+PickPicTweet/appsettings.json
 
 # output
-VRCPicSimilarity/output_path.txt
+PickPicTweet/output_path.txt
