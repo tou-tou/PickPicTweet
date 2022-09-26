@@ -13,6 +13,7 @@ var prjPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(
 var argIndexFullPath = Array.IndexOf(args, "--full-path");
 var argIndexIsEverydayDir = Array.IndexOf(args, "--is-everyday-dir");
 var argIndexCount = Array.IndexOf(args, "--pic-pool-count");
+//Console.WriteLine(argIndexCount+argIndexFullPath+argIndexIsEverydayDir);
 
 // デフォルトはVRChatを想定
 var sourceDir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
@@ -73,10 +74,14 @@ var sbp = new SelectBalancedPic(filePaths);
 //距離15だと似た画像が出現する
 var balancedPics =sbp.Pick(20);
 
+// foreach (var pic in balancedPics)
+// {
+//   Console.WriteLine(pic);
+// }
 var tw = new Twitter();
 //tw.TextTweet("test from c#");
 // 画像付きツイート
-//tw.ImageTweet("test",balancedPics);
+tw.ImageTweet("最近の！",balancedPics);
 
 
 // 今までに投稿した画像パスを100個保存
