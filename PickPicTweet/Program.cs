@@ -7,26 +7,22 @@ var prjPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(
 // 実行時引数の処理
 // --full-path 
 // --is-everyday-dir
+// --pic-pool-count
 
 
 var argIndexFullPath = Array.IndexOf(args, "--full-path");
 var argIndexIsEverydayDir = Array.IndexOf(args, "--is-everyday-dir");
+var argIndexCount = Array.IndexOf(args, "--pic-pool-count");
 
 // デフォルトはVRChatを想定
 var sourceDir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
 var flag1
- = argIndexFullPath > 0 && argIndexIsEverydayDir + 1 < args.Length && Directory.Exists(args[argIndexFullPath+1]);
+ = argIndexFullPath > 0 && argIndexFullPath + 1 < args.Length && Directory.Exists(args[argIndexFullPath+1]);
 if (flag1)
 {
  sourceDir = args[argIndexFullPath + 1];
 }
-
-
 //var sourceDir = prjPath + @"\SamplePic";
-
-// VRChatの場合、 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
-//var vrcPicDir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
-
 
 // ソースディレクトリ以下のpictureを日付別で割り振る
 var flag2 = argIndexIsEverydayDir > 0 && argIndexIsEverydayDir + 1 < args.Length &&
@@ -40,7 +36,13 @@ if (flag2)
 /*
  * ソースディレクトリ配下の最近の画像100枚を取得
  */
-const int fileCount = 100;
+var fileCount = 100;
+var flag3 = argIndexCount > 0 && argIndexCount + 1 < args.Length && int.TryParse(args[argIndexCount+1],out var resultCount);
+if (flag3)
+{
+ fileCount = int.Parse(args[argIndexCount + 1]);
+}
+
 // サブディレクトリを含むすべてのpngファイルパスを取得して作成日で並び替え
 var filePaths = Directory.GetFiles(sourceDir, "*.png", SearchOption.AllDirectories)
  .Where(filePath => true /* 特定のファイルは除く */).OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
