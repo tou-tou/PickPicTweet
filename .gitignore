@@ -45,6 +45,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+PickPicTweet/bin
+PickPicTweet/obj
 
 # Pictures
 PickPicTweet/OutputPic/*.png
