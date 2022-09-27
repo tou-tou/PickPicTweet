@@ -1,20 +1,18 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using PickPicTweet;
 
-PicSimilarity ps = new PicSimilarity();
-var prjPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())));
-
 // 実行時引数の処理
 // --full-path 
 // --is-everyday-dir
 // --pic-pool-count
-
-
+// --no-tweet
 var argIndexFullPath = Array.IndexOf(args, "--full-path");
-var argIndexIsEverydayDir = Array.IndexOf(args, "--is-everyday-dir");
+var argIndexEveryDir = Array.IndexOf(args, "--every-dir");
 var argIndexCount = Array.IndexOf(args, "--pic-pool-count");
-//Console.WriteLine(argIndexCount+argIndexFullPath+argIndexIsEverydayDir);
-
+var argIndexNoTweet = Array.IndexOf(args, "--no-tweet");
+/*
+ * 画像を含むソースディレクトリを指定
+ */
 // デフォルトはVRChatを想定
 var sourceDir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
 var flag1
@@ -23,19 +21,23 @@ if (flag1)
 {
  sourceDir = args[argIndexFullPath + 1];
 }
-//var sourceDir = prjPath + @"\SamplePic";
 
-// ソースディレクトリ以下のpictureを日付別で割り振る
-var flag2 = argIndexIsEverydayDir > 0 && argIndexIsEverydayDir + 1 < args.Length &&
-           args[argIndexIsEverydayDir + 1] == "1";
+/*
+ * ソースディレクトリ以下の画像を月別または日付別で割り振る
+ * flagが0の時は機能off,1の時は月別,2の時は日付別
+ * デフォルトは0
+ */
+var flag2 = argIndexEveryDir > 0 && argIndexEveryDir + 1 < args.Length &&
+            Int32.TryParse(args[argIndexEveryDir + 1],out _);
 if (flag2)
 {
+ Console.WriteLine(args[argIndexEveryDir + 1]);
  var ped = new PicEveryDay();
- ped.Distribute(sourceDir);
+ ped.Distribute(sourceDir,Int32.Parse(args[argIndexEveryDir + 1]));
 }
 
 /*
- * ソースディレクトリ配下の最近の画像100枚を取得
+ * ソースディレクトリ配下の最近の画像100枚を取得し画像の候補を挙げる
  */
 var fileCount = 100;
 var flag3 = argIndexCount > 0 && argIndexCount + 1 < args.Length && int.TryParse(args[argIndexCount+1],out var resultCount);
@@ -69,22 +71,36 @@ foreach (var path in postPaths)
  filePaths.Remove(path);
 }
 
-// 撮影時刻と見た目を考慮した画像を4枚選ぶ
+/*
+ * 撮影時刻と見た目を考慮した画像を最大4枚選ぶ
+ */
 var sbp = new SelectBalancedPic(filePaths);
-//距離15だと似た画像が出現する
+// さらに類似画像を弾きたい場合は、Pickの引数:thresholdを大きくする(最大64)
 var balancedPics =sbp.Pick(20);
 
-// foreach (var pic in balancedPics)
-// {
-//   Console.WriteLine(pic);
-// }
+/*
+ * ツイート
+ */
 var tw = new Twitter();
 //tw.TextTweet("test from c#");
 // 画像付きツイート
-tw.ImageTweet("最近の！",balancedPics);
+var flag4 =  argIndexNoTweet > 0 && argIndexNoTweet + 1 < args.Length && args[argIndexNoTweet+1]=="1";
+if (flag4)
+{
+ foreach (var pic in balancedPics)
+ {
+  Console.WriteLine(pic);
+ }
+}
+else
+{
+ tw.ImageTweet("最近の！", balancedPics);
+}
 
 
-// 今までに投稿した画像パスを100個保存
+/*
+ * 今までに投稿した画像パスを100個保存
+ */
 // postPathsは時系列昇順なので前半を削る
 postPaths.AddRange(balancedPics);
 if (postPaths.Count > 100) postPaths = postPaths.GetRange(postPaths.Count - 100, 100);
