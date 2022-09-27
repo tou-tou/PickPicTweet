@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace VRCPicSimilarity;
+namespace PickPicTweet;
 
 /// <summary>
 /// 最大100枚の画像から撮影時刻と見た目を考慮してバランスよく最大4枚の画像を選ぶ
@@ -32,8 +32,7 @@ public class SelectBalancedPic
     /// <returns></returns>
     public void Sort()
     {
-        _paths.Sort();
-        _paths.Reverse();
+         _paths =  _paths.OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
     }
     
     /// <summary>
@@ -62,6 +61,8 @@ public class SelectBalancedPic
         {
             _paths.Remove(path);
         }
+
+        if (_paths.Count == 0) return "";
         
         var random = new Random();
         // _pathsは時系列降順なので、前半からランダムに選ぶことでできるだけ最近の画像を選ぶ
@@ -82,7 +83,8 @@ public class SelectBalancedPic
         Sort();
         // 最近の画像をランダムに1つ取り出しリストから消す
         var random = new Random();
-        var recentPaths = _paths.GetRange(0, _paths.Count/3);
+        if (_paths.Count == 0) return new List<string>();
+        var recentPaths = _paths.GetRange(0, _paths.Count/3+1);
         var path1= recentPaths[random.Next(recentPaths.Count)];
         // 元のリストから最近の画像を消す
         _paths.Remove(path1);

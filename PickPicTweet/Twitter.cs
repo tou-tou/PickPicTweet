@@ -1,7 +1,7 @@
 ﻿using CoreTweet;
 using Microsoft.Extensions.Configuration;
 
-namespace VRCPicSimilarity;
+namespace PickPicTweet;
 
 public class Twitter
 {
@@ -39,6 +39,7 @@ public class Twitter
 
     /// <summary>
     /// 最大4枚の画像付きツイート
+    /// 画像がない場合はテキストのみツイート
     /// </summary>
     /// <param name="text"></param>
     /// <param name="paths"></param>

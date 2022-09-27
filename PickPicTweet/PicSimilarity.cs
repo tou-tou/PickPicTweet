@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 
-namespace VRCPicSimilarity;
+namespace PickPicTweet;
 
 /// <summary>
 /// 2つの画像の類似度をdHashを用いて計算する
