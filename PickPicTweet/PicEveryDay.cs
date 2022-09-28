@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace PickPicTweet;
+﻿namespace PickPicTweet;
 
 /// <summary>
 /// 画像を月別フォルダ、日付別フォルダに割り振りなおす
@@ -17,13 +15,12 @@ public class PicEveryDay
     {
         //ディレクトリが存在しなかったらfalseを返す
         if (!Directory.Exists(dirPath)) return false;
-        var fi = new FileInfo(dirPath);
-        var sMonth = fi.Name.Split("-");
+        FileInfo fi = new FileInfo(dirPath);
+        string[] sMonth = fi.Name.Split("-");
         if (sMonth.Length==2)
         {
-            return Int32.TryParse(sMonth[0], out _) && Int32.TryParse(sMonth[1],out _);
+            return int.TryParse(sMonth[0], out _) && int.TryParse(sMonth[1],out _);
         }
-
         return false;
     }
     
@@ -37,22 +34,24 @@ public class PicEveryDay
     {
         //ディレクトリが存在しなかったらfalseを返す
         if (!Directory.Exists(dirPath)) return false;
-        var fi = new FileInfo(dirPath);
-        var sDate = fi.Name.Split("-");
+        FileInfo fi = new FileInfo(dirPath);
+        string[] sDate = fi.Name.Split("-");
         if (sDate.Length == 3)
         {
-            return Int32.TryParse(sDate[0], out _) && Int32.TryParse(sDate[1],out _) && Int32.TryParse(sDate[2],out _);
+            return int.TryParse(sDate[0], out _) && int.TryParse(sDate[1],out _) && int.TryParse(sDate[2],out _);
         }
-
         return false;
     }
-
+    /// <summary>
+    /// 画像フォルダを月別に割りふる
+    /// </summary>
+    /// <param name="sourceDirectory"></param>
     private void DistributeMonth(string sourceDirectory)
     {
-        var files = Directory.EnumerateFiles(sourceDirectory);
+        IEnumerable<string> files = Directory.EnumerateFiles(sourceDirectory);
         foreach (string currentFile in files)
         {
-            var fileInfo = new FileInfo(currentFile);
+            FileInfo fileInfo = new FileInfo(currentFile);
             if (fileInfo.Extension != ".png") continue;
             var creationMonth = fileInfo.CreationTime.ToString("yyyy-MM");
             var destDir = sourceDirectory + "\\" + creationMonth;
@@ -74,13 +73,17 @@ public class PicEveryDay
             }
         }
     }
-
+    
+    /// <summary>
+    /// 画像フォルダを日付別に割り振る
+    /// </summary>
+    /// <param name="sourceDirectory"></param>
     private void DistributeDate(string sourceDirectory)
     {
-        var files = Directory.EnumerateFiles(sourceDirectory);
+        IEnumerable<string> files = Directory.EnumerateFiles(sourceDirectory);
         foreach (string currentFile in files)
         {
-            var fileInfo = new FileInfo(currentFile);
+            FileInfo fileInfo = new FileInfo(currentFile);
             if (fileInfo.Extension != ".png") continue;
             var creationDate = fileInfo.CreationTime.ToString("yyyy-MM-dd");
             var destDir = sourceDirectory + "\\" + creationDate;
@@ -103,6 +106,7 @@ public class PicEveryDay
             }
         }
     }
+    
     /// <summary>
     /// flagが0の時は何もしない、1の時は月別、2の時は日付別
     /// 月別ディレクトリはソースディレクトリの直下に作られる
@@ -126,10 +130,10 @@ public class PicEveryDay
                 case 2:
                 {
                     DistributeMonth(sourceDirectory);
-                    var files = Directory.EnumerateDirectories(sourceDirectory);
-                    foreach (var file in files)
+                    IEnumerable<string> files = Directory.EnumerateDirectories(sourceDirectory);
+                    foreach (string file in files)
                     {
-                        var fi = new FileInfo(file);
+                        FileInfo fi = new FileInfo(file);
                         var monthDirPath = fi.FullName;
                         Console.WriteLine(monthDirPath);
 
@@ -139,7 +143,6 @@ public class PicEveryDay
                             DistributeDate(monthDirPath);
                         }
                     }
-                    
                     break;
                 }
             }

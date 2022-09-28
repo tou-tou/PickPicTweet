@@ -1,8 +1,12 @@
 ﻿using CoreTweet;
+using CoreTweet.V2;
 using Microsoft.Extensions.Configuration;
 
 namespace PickPicTweet;
 
+/// <summary>
+/// Twitterをする
+/// </summary>
 public class Twitter
 {
     private string ConsumerKey { get; }
@@ -10,7 +14,14 @@ public class Twitter
     private string AccessToken { get; }
     private string AccessTokenSecret { get; }
     private Tokens Token { get; }
-
+    
+    /// <summary>
+    /// Twitter APIを利用するためのトークンを受取る
+    /// </summary>
+    /// <param name="consumerKey"></param>
+    /// <param name="consumerKeySecret"></param>
+    /// <param name="accessToken"></param>
+    /// <param name="accessTokenSecret"></param>
     public Twitter(string consumerKey, string consumerKeySecret, string accessToken, string accessTokenSecret)
     {
         ConsumerKey = consumerKey;
@@ -20,6 +31,7 @@ public class Twitter
         Token = Tokens.Create(
             ConsumerKey, ConsumerKeySecret, AccessToken, AccessTokenSecret);
     }
+    
     /// <summary>
     /// テキストのみツイート
     /// </summary>
@@ -27,6 +39,17 @@ public class Twitter
     public void TextTweet(string text)
     {
         Token.Statuses.Update(status => text);
+    }
+    
+    /// <summary>
+    /// 画像をアップロードしてメディアidを取得
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    private long UploadImage(string path)
+    {
+        MediaUploadResult result = Token.Media.Upload(media: new FileInfo(path));
+        return result.MediaId;
     }
 
     /// <summary>
@@ -38,22 +61,11 @@ public class Twitter
     public void ImageTweet(string text, List<string> paths)
     {
         //画像をアップロードして帰ってきたmedia_idを追加する
-        var mediaIds = paths.Select(UploadImage).ToList();
+        List<long> mediaIds = paths.Select(UploadImage).ToList();
         Token.Statuses.Update(new
         {
             status = text,
             media_ids = mediaIds
         });
-    }
-    
-    /// <summary>
-    /// 画像をアップロードしてメディアidを取得
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    private long UploadImage(string path)
-    {
-        var result = Token.Media.Upload(media: new FileInfo(path));
-        return result.MediaId;
     }
 }
