@@ -10,16 +10,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        
+      - name: Create appsettings.json
+        run: cat PickPicTweet/appsettings_sample.json > PickPicTweet/appsettings.json
+        
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
-        
       - run: dotnet build --configuration Release
       #- run: dotnet test
+      
       - name: Bump version and push tag # https://dev.classmethod.jp/articles/howto-use-github-tag/
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Create a GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -31,7 +36,8 @@ jobs:
           body: ${{steps.tag_version.outputs.changelog}}
           draft: false
           prerelease: false
-      - name: Upload release asset # https://github.com/actions/upload-release-asset
+      
+      - name: Upload release asset PickPicTweet.ext # https://github.com/actions/upload-release-asset
         uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -40,4 +46,14 @@ jobs:
           asset_path: PickPicTweet/bin/Release/net6.0/PickPicTweet.exe
           asset_name: PickPicTweet.exe
           asset_content_type: application/octet-stream
-        
+          
+      - name: Upload release asset appsettings.json
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: PickPicTweet/bin/Release/net6.0/appsettings.json
+          asset_name: appsettings.json
+          asset_content_type: application/json
+
