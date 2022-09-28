@@ -19,7 +19,7 @@ public class PicSimilarity
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <returns></returns>
-    public Bitmap ReduceSize(Bitmap img,int width=9,int height=8)
+    private Bitmap ReduceSize(Bitmap img,int width=9,int height=8)
     {
         return new Bitmap(img, width, height);
     }
@@ -30,13 +30,13 @@ public class PicSimilarity
     /// ref:https://ja.wikipedia.org/wiki/%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB
     /// </summary>
     /// <returns></returns>
-    public Bitmap ConvertGray(Bitmap img)
+    private Bitmap ConvertGray(Bitmap img)
     {
-        int w = img.Width;
-        int h = img.Height;
-        for (int i = 0; i < w; i++)
+        var w = img.Width;
+        var h = img.Height;
+        for (var i = 0; i < w; i++)
         {
-            for (int j = 0; j < h; j++)
+            for (var j = 0; j < h; j++)
             {
                 Color c = img.GetPixel(i, j);
                 Byte gamma = (byte) (c.R*0.2126 + c.G*0.7152 + c.B*0.0722);
@@ -52,17 +52,17 @@ public class PicSimilarity
     /// </summary>
     /// <param name="img"></param>
     /// <returns></returns>
-    public ulong ComputeAdjacentPixelDiff(Bitmap img)
+    private ulong ComputeAdjacentPixelDiff(Bitmap img)
     {
         ulong hash = 0b_0;
-        int w = img.Width;
-        int h = img.Height;
+        var w = img.Width;
+        var h = img.Height;
         
         // 高さを固定
-        for (int j = 0; j < h; j++)
+        for (var j = 0; j < h; j++)
         {
             // 横のピクセルの隣接数はw-1
-            for (int i = 0; i < w-1; i++)
+            for (var i = 0; i < w-1; i++)
             {
                 if (img.GetPixel(i,j).R < img.GetPixel(i+1,j).R)
                 {
@@ -86,7 +86,7 @@ public class PicSimilarity
     public string UInt64ToBinary(ulong v)
     {
         System.Text.StringBuilder b = new System.Text.StringBuilder();
-        for (int i = 0; i < 64; i++)
+        for (var i = 0; i < 64; i++)
         {
             b.Insert(0,((v&1)==1) ? "1":"0");//最下位ビットを取り出し後ろから文字をつめる
             v >>= 1;

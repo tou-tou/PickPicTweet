@@ -47,17 +47,17 @@ public class SelectBalancedPic
         var pivotImage = new Bitmap(pivot);
         // 削除用のリスト
         var removePaths = new List<string>();
-        foreach (var path in _paths)
+        foreach (string path in _paths)
         {
             var img = new Bitmap(path);
-            var d = _ps.ComputeHammingDistance(pivotImage, img);
+            int d = _ps.ComputeHammingDistance(pivotImage, img);
             if (d <= threshold)
             {
                 removePaths.Add(path);
             }
         }
         // 元のリストから削除
-        foreach (var path in removePaths)
+        foreach (string path in removePaths)
         {
             _paths.Remove(path);
         }
@@ -66,7 +66,7 @@ public class SelectBalancedPic
         
         var random = new Random();
         // _pathsは時系列降順なので、前半からランダムに選ぶことでできるだけ最近の画像を選ぶ
-        var val= _paths[random.Next(_paths.Count/2)];
+        string val= _paths[random.Next(_paths.Count/2)];
         _paths.Remove(val);
         return val;
 
@@ -84,18 +84,18 @@ public class SelectBalancedPic
         // 最近の画像をランダムに1つ取り出しリストから消す
         var random = new Random();
         if (_paths.Count == 0) return new List<string>();
-        var recentPaths = _paths.GetRange(0, _paths.Count/3+1);
-        var path1= recentPaths[random.Next(recentPaths.Count)];
+        List<string> recentPaths = _paths.GetRange(0, _paths.Count/3+1);
+        string path1= recentPaths[random.Next(recentPaths.Count)];
         // 元のリストから最近の画像を消す
         _paths.Remove(path1);
         rt.Add(path1);
         
         // 適度な類似度をもつ画像パスを取り出す
-        var path2 = EliminateNearsAndPop(path1,threshold);
+        string path2 = EliminateNearsAndPop(path1,threshold);
         if (path2 != "") rt.Add(path2);
-        var path3 = EliminateNearsAndPop(path2,threshold);
+        string path3 = EliminateNearsAndPop(path2,threshold);
         if (path3 != "") rt.Add(path3);
-        var path4 = EliminateNearsAndPop(path3,threshold);
+        string path4 = EliminateNearsAndPop(path3,threshold);
         if (path4 != "") rt.Add(path4);
         
         return rt;
