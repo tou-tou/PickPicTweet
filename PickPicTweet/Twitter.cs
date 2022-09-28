@@ -5,33 +5,25 @@ namespace PickPicTweet;
 
 public class Twitter
 {
-    private string ConsumerKey { get; set; }
-    private string ConsumerKeySecret { get; set; }
-    private string AccessToken { get; set; }
-    private string AccessTokenSecret { get; set; }
-    private Tokens Token { get; set; }
+    private string ConsumerKey { get; }
+    private string ConsumerKeySecret { get; }
+    private string AccessToken { get; }
+    private string AccessTokenSecret { get; }
+    private Tokens Token { get; }
 
-    public Twitter()
+    public Twitter(string consumerKey, string consumerKeySecret, string accessToken, string accessTokenSecret)
     {
-        SetKey();
-        CreateToken();
-    }
-
-    private void SetKey()
-    {
-        var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-        ConsumerKey = config["ConsumerKey"];
-        ConsumerKeySecret = config["ConsumerKeySecret"];
-        AccessToken = config["AccessToken"];
-        AccessTokenSecret = config["AccessTokenSecret"];
-    }
-
-    private void CreateToken()
-    {
+        ConsumerKey = consumerKey;
+        ConsumerKeySecret = consumerKeySecret;
+        AccessToken = accessToken;
+        AccessTokenSecret = accessTokenSecret;
         Token = Tokens.Create(
             ConsumerKey, ConsumerKeySecret, AccessToken, AccessTokenSecret);
     }
-
+    /// <summary>
+    /// テキストのみツイート
+    /// </summary>
+    /// <param name="text"></param>
     public void TextTweet(string text)
     {
         Token.Statuses.Update(status => text);
