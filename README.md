@@ -1,5 +1,5 @@
-# PickPicTweet(開発中)
-VRChatで撮影した写真を保存したフォルダを読み込み、時間と絵柄を考慮していい感じに写真を4枚を選んでTwitterに投稿するアプリケーションです。
+# PickPicTweet
+VRChat等で撮影した写真を保存したフォルダを読み込み、時間と絵柄を考慮していい感じに写真を4枚を選んでTwitterに投稿するアプリケーションです。
 Windowsのタスクスケジューラーで実行ファイルを登録すると定期的に実行できます
 
 # 機能
@@ -8,16 +8,23 @@ Windowsのタスクスケジューラーで実行ファイルを登録すると�
   - できるだけ最近撮影した写真を選びます
   - 過去に選ばれた写真は除かれます
   - [dHash](https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html) を用いた画像類似度を計算し、似ている写真は投稿写真から除かれます
-- TwitterAPI用のトークンを利用してTweetすることができます。
+- TwitterAPI用のトークンを利用してTweetする
 # 環境
 - Windows10
 - .NET6.0
 
 # 使い方
+## リリースページから実行ファイルをダウンロード
 - [Twitter開発者プラットフォーム](https://developer.twitter.com/ja/docs/twitter-ads-api/getting-started) で開発者用トークンを申請して取得する。
-- `appsettings_sample.json`を参考に`appsettings.json`を作成し取得したトークンを設定する
+- [Releases · tou-tou/PickPicTweet](https://github.com/tou-tou/PickPicTweet/releases) から`PickPicTweet.exe`と`appsettings.json`をダウンロード
+- `appsettings.json`に取得したトークンを設定し、実行ファイルと同じディレクトリに配置
+- Windowsタスクスケジューラーに日時や実行ファイルを指定する
+
+## VisualStudioで実行ファイルを生成
+- [Twitter開発者プラットフォーム](https://developer.twitter.com/ja/docs/twitter-ads-api/getting-started) で開発者用トークンを申請して取得する。
+- `PickPicTweet/appsettings_sample.json`を参考に`PickPicTweet/appsettings.json`を作成し取得したトークンを設定する
 - VisualStudioでソリューションをビルドし、実行ファイルを生成する
-  - リリースページから実行ファイルをダウンロードできるようにする予定です
+  - .NET6.0の環境です
 - Windowsタスクスケジューラーに日時や実行ファイルを指定する
 
 ## 実行時オプション
