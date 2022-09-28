@@ -1,9 +1,9 @@
 name: MSBuild and Release
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  push:
+    branches:
+      - main
 jobs:
   buld:
     runs-on: windows-2022
@@ -15,15 +15,20 @@ jobs:
         
       - run: dotnet build --configuration Release
       #- run: dotnet test
-      - name: Create Release
+      - name: Bump version and push tag # https://dev.classmethod.jp/articles/howto-use-github-tag/
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          tag_name: ${{github.event.pull_request.title}}
-          release_name: ${{github.event.pull_request.title}}
-          body: ${{github.event.pull_request.body}}
+          tag_name: ${{steps.tag_version.outputs.new_tag}}
+          release_name: Release ${{steps.tag_version.outputs.new_tage}}
+          body: ${{steps.tag_version.outputs.changelog}}
           draft: false
           prerelease: false
       - name: Upload release asset # https://github.com/actions/upload-release-asset
