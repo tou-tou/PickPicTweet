@@ -28,6 +28,8 @@ jobs:
           prerelease: false
       - name: Upload release asset # https://github.com/actions/upload-release-asset
         uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
           asset_path: PickPicTweet/bin/Release/net6.0/PickPicTweet.exe
