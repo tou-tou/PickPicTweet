@@ -134,9 +134,7 @@ public class PicEveryDay
                     foreach (string file in files)
                     {
                         FileInfo fi = new FileInfo(file);
-                        var monthDirPath = fi.FullName;
-                        Console.WriteLine(monthDirPath);
-
+                        string monthDirPath = fi.FullName;
                         //ディレクトリが存在し、名前に月が含まれる場合
                         if (IsMonth(monthDirPath))
                         {
