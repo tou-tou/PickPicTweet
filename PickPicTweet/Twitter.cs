@@ -1,6 +1,4 @@
 ﻿using CoreTweet;
-using CoreTweet.V2;
-using Microsoft.Extensions.Configuration;
 
 namespace PickPicTweet;
 
