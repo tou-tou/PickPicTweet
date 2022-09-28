@@ -1,4 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
+
+using Microsoft.Extensions.Configuration;
 using PickPicTweet;
 
 // 実行時引数の処理
@@ -10,6 +12,12 @@ var argIndexFullPath = Array.IndexOf(args, "--full-path");
 var argIndexEveryDir = Array.IndexOf(args, "--every-dir");
 var argIndexCount = Array.IndexOf(args, "--pic-pool-count");
 var argIndexNoTweet = Array.IndexOf(args, "--no-tweet");
+
+/*
+ * 設定ファイルの読み込み
+ */
+var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
 /*
  * 画像を含むソースディレクトリを指定
  */
@@ -81,7 +89,7 @@ var balancedPics =sbp.Pick(20);
 /*
  * ツイート
  */
-var tw = new Twitter();
+var tw = new Twitter(config["ConsumerKey"],config["ConsumerKeySecret"],config["AccessToken"],config["AccessTokenSecret"]);
 //tw.TextTweet("test from c#");
 // 画像付きツイート
 var flag4 =  argIndexNoTweet > 0 && argIndexNoTweet + 1 < args.Length && args[argIndexNoTweet+1]=="1";
