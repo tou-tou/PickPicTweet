@@ -1,0 +1,36 @@
+name: MSBuild and Release
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [closed]
+    branches: [main]
+jobs:
+  buld:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+        
+      - run: dotnet build --configuration Release
+      #- run: dotnet test
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{github.event.pull_request.title}}
+          release_name: ${{github.event.pull_request.title}}
+          body: ${{github.event.pull_request.body}}
+          draft: false
+          prerelease: false
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+            name: exe file
+            path: PickPicTweet/bin/Release/net6.0/PickPicTweet.exe
+
