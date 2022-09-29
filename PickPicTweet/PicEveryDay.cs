@@ -43,13 +43,35 @@ public class PicEveryDay
         return false;
     }
 
+    enum DistDateFormat
+    {
+        Month,
+        Date
+    }
+
     /// <summary>
     /// 画像フォルダを月別・日付別に割り振る
     /// </summary>
     /// <param name="sourceDirectory"></param>
-    /// <param name="format"></param>
-    private void DistributeTime(string sourceDirectory,string format)
+    /// <param name="dateFormat"></param>
+    private void DistributeTime(string sourceDirectory,DistDateFormat dateFormat)
     {
+        string format;
+        Func<string, bool> isDir; 
+        if (dateFormat == DistDateFormat.Month)
+        {
+            format = "yyyy-MM-dd";
+            isDir = IsMonth;
+        }
+        else if(dateFormat == DistDateFormat.Date)
+        {
+            format = "yyyy-MM";
+            isDir = IsDate;
+        }
+        else
+        {
+            return;
+        }
         try
         {
             IEnumerable<string> files = Directory.EnumerateFiles(sourceDirectory);
@@ -57,11 +79,10 @@ public class PicEveryDay
             {
                 FileInfo fileInfo = new FileInfo(currentFile);
                 if (fileInfo.Extension != ".png") continue;
-                var creationTime = fileInfo.CreationTime.ToString(format);
-                var destDir = sourceDirectory + "\\" + creationTime;
+                var destDir = sourceDirectory + "\\" + fileInfo.CreationTime.ToString(format);
                 var destFilePath = destDir + "\\" + fileInfo.Name;
-                // ディレクトリが存在し、かつ名前に日付が含まれている場合
-                if (IsDate(destDir))
+                // ディレクトリが存在し、かつ名前に月・日付が含まれている場合
+                if (isDir(destDir))
                 {
                     if (!File.Exists(destFilePath))
                     {
@@ -83,10 +104,8 @@ public class PicEveryDay
             Console.WriteLine(e);
             throw;
         }
-
     }
-    
-    
+
     /// <summary>
     /// flagが0の時は何もしない、1の時は月別、2の時は日付別
     /// 月別ディレクトリはソースディレクトリの直下に作られる
@@ -102,12 +121,12 @@ public class PicEveryDay
                 return;
             case 1:
             {
-                DistributeTime(sourceDirectory,"yyyy-MM-dd");
+                DistributeTime(sourceDirectory,DistDateFormat.Month);
                 break;
             }
             case 2:
             {
-                DistributeTime(sourceDirectory,"yyyy-MM-dd");
+                DistributeTime(sourceDirectory,DistDateFormat.Month);
                 IEnumerable<string> files = Directory.EnumerateDirectories(sourceDirectory);
                 foreach (string file in files)
                 {
@@ -116,11 +135,13 @@ public class PicEveryDay
                     //ディレクトリが存在し、名前に月が含まれる場合
                     if (IsMonth(monthDirPath))
                     {
-                        DistributeTime(monthDirPath,"yyyy-MM");
+                        DistributeTime(monthDirPath,DistDateFormat.Date);
                     }
                 }
                 break;
             }
+            default:
+                return;
         }
     }
 }
