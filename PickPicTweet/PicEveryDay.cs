@@ -43,7 +43,7 @@ public class PicEveryDay
         return false;
     }
 
-    enum DistDateFormat
+    private enum DistDateFormat
     {
         Month,
         Date
