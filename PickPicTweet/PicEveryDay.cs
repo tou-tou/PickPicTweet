@@ -66,12 +66,12 @@ public class PicEveryDay
         Func<string, bool> isDir; 
         if (dateFormat == DistDateFormat.Month)
         {
-            format = "yyyy-MM-dd";
+            format = "yyyy-MM";
             isDir = IsMonth;
         }
         else if(dateFormat == DistDateFormat.Date)
         {
-            format = "yyyy-MM";
+            format = "yyyy-MM-dd";
             isDir = IsDate;
         }
         else
