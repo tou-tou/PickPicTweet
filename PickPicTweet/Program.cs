@@ -25,10 +25,14 @@ IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json
 // デフォルトはVRChatを想定
 var sourceDir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\VRChat";
 var flag1
- = argIndexFullPath > 0 && argIndexFullPath + 1 < args.Length && Directory.Exists(args[argIndexFullPath+1]);
+ = argIndexFullPath >= 0 && argIndexFullPath + 1 < args.Length && Directory.Exists(args[argIndexFullPath+1]);
+Console.WriteLine(args[argIndexFullPath+1]);
+Console.WriteLine(argIndexFullPath);
+Console.WriteLine(args[0]);
 if (flag1)
 {
  sourceDir = args[argIndexFullPath + 1];
+ Console.WriteLine(sourceDir);
 }
 
 /*
@@ -36,7 +40,7 @@ if (flag1)
  * flagが0の時は機能off,1の時は月別,2の時は日付別
  * デフォルトは0
  */
-var flag2 = argIndexEveryDir > 0 && argIndexEveryDir + 1 < args.Length &&
+var flag2 = argIndexEveryDir >= 0 && argIndexEveryDir + 1 < args.Length &&
             Int32.TryParse(args[argIndexEveryDir + 1],out _);
 if (flag2)
 {
@@ -49,17 +53,22 @@ if (flag2)
  * ソースディレクトリ配下の最近の画像100枚を取得し画像の候補を挙げる
  */
 var fileCount = 100;
-var flag3 = argIndexCount > 0 && argIndexCount + 1 < args.Length && int.TryParse(args[argIndexCount+1],out var resultCount);
+var flag3 = argIndexCount >= 0 && argIndexCount + 1 < args.Length && int.TryParse(args[argIndexCount+1],out var resultCount);
 if (flag3)
 {
  fileCount = int.Parse(args[argIndexCount + 1]);
 }
 
-// サブディレクトリを含むすべてのpngファイルパスを取得して作成日で並び替え
-List<string> filePaths = Directory.GetFiles(sourceDir, "*.png", SearchOption.AllDirectories)
- .Where(filePath => true /* 特定のファイルは除く */).OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
-
+// サブディレクトリを含むすべてのjpg,pngファイルパスを取得して作成日で並び替え
+var filePaths = new List<string>();
+List<string> jpgFilePaths = Directory.GetFiles(sourceDir, "*.jpg", SearchOption.AllDirectories).ToList(); 
+List<string> pngFilePaths = Directory.GetFiles(sourceDir, "*.png", SearchOption.AllDirectories).ToList();
+filePaths.AddRange(jpgFilePaths);
+filePaths.AddRange(pngFilePaths);
+filePaths = filePaths.OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
 filePaths = filePaths.GetRange(0, fileCount);
+// secretフォルダ配下の画像は取り除く
+filePaths = filePaths.Where(filePath => !Path.GetDirectoryName(filePath).Contains("secret")).ToList();
 
 // 最近投稿した画像をローカルテキストから取得
 var outputPath = @"output_path.txt";
