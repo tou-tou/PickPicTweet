@@ -15,24 +15,25 @@ namespace PickPicTweet;
 /// </summary>
 public class SelectBalancedPic
 {
-    private List<string> _paths;
-    private PicSimilarity _ps;
+    /// <summary>
+    /// _orderedSetは選ばれる画像の候補を含むリスト
+    /// </summary>
+    private List<string> _orderedSet;
+    private readonly PicSimilarity _ps;
 
     public SelectBalancedPic(List<string> paths)
     {
-        _paths = paths;
+        _orderedSet = paths;
         _ps = new PicSimilarity();
     }
 
     /// <summary>
-    /// ファイル名のリストを降順名前順でソート
-    /// VRChatのスクショには時刻が含まれるので時系列降順になる
-    /// TODO:あとでfile infoから作成日時をとってきて並び替える
+    /// ファイル名のリストを作成日時降順でソート
     /// </summary>
     /// <returns></returns>
-    public void Sort()
+    private void DescendingTimeSort()
     {
-         _paths =  _paths.OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
+         _orderedSet =  _orderedSet.OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
     }
     
     /// <summary>
@@ -43,71 +44,70 @@ public class SelectBalancedPic
     /// <param name="threshold"></param>
     private string EliminateNearsAndPop(string pivot,int threshold)
     {
-        if (_paths.Count == 0) return "";
-        var pivotImage = new Bitmap(pivot);
-        // 削除用のリスト
-        var removePaths = new List<string>();
-        foreach (var path in _paths)
+        if (_orderedSet.Count == 0) return "";
+        var pivotImage = new Bitmap(pivot);// 画像類似度計算の基準となる画像
+        var removePaths = new List<string>();// 削除用(基準画像と距離が近い画像)のリスト
+        // 基準画像から距離が近い画像のリストを作成
+        foreach (string path in _orderedSet)
         {
             var img = new Bitmap(path);
-            var d = _ps.ComputeHammingDistance(pivotImage, img);
+            int d = _ps.ComputeHammingDistance(pivotImage, img);
             if (d <= threshold)
             {
                 removePaths.Add(path);
             }
         }
-        // 元のリストから削除
-        foreach (var path in removePaths)
+        // 画像候補から距離が近い画像を削除
+        foreach (string path in removePaths)
         {
-            _paths.Remove(path);
+            _orderedSet.Remove(path);
         }
 
-        if (_paths.Count == 0) return "";
+        if (_orderedSet.Count == 0) return "";
         
+        // _orderedSetは時系列降順なので、前半からランダムに選ぶことでできるだけ最近の画像を選ぶ
         var random = new Random();
-        // _pathsは時系列降順なので、前半からランダムに選ぶことでできるだけ最近の画像を選ぶ
-        var val= _paths[random.Next(_paths.Count/2)];
-        _paths.Remove(val);
+        string val= _orderedSet[random.Next(_orderedSet.Count/2)];
+        _orderedSet.Remove(val);
         return val;
-
     }
     
     /// <summary>
-    /// 画像同士の距離(距離が近ければ似ていて遠ければ似ていない,0以上64以下)がthreshold(デフォルトは15)よりおおきい画像を最大で4枚選ぶ
+    /// 画像同士の距離(距離が近ければ似ていて遠ければ似ていない,0以上64以下)がthreshold(デフォルトは20)よりおおきい画像を最大で4枚選ぶ
     /// </summary>
     /// <param name="threshold"></param>
     /// <returns></returns>
-    public List<string> Pick(int threshold = 15)
+    public List<string> Pick(int threshold = 20)
     {
-        var rt = new List<string>();
-        Sort();
+        // 画像候補のリスト(_orderSet)を時系列降順に並び替える
+        DescendingTimeSort();
+        if (_orderedSet.Count == 0) return new List<string>();
+        
         // 最近の画像をランダムに1つ取り出しリストから消す
+        List<string> recentPaths = _orderedSet.GetRange(0, _orderedSet.Count/3+1); // 最近の画像を取り出す
         var random = new Random();
-        if (_paths.Count == 0) return new List<string>();
-        var recentPaths = _paths.GetRange(0, _paths.Count/3+1);
-        var path1= recentPaths[random.Next(recentPaths.Count)];
-        // 元のリストから最近の画像を消す
-        _paths.Remove(path1);
-        rt.Add(path1);
+        string path1 = recentPaths[random.Next(recentPaths.Count)]; // ランダムに選ぶ
+        _orderedSet.Remove(path1);// 画像候補から最近の画像を消す
         
-        // 適度な類似度をもつ画像パスを取り出す
-        var path2 = EliminateNearsAndPop(path1,threshold);
-        if (path2 != "") rt.Add(path2);
-        var path3 = EliminateNearsAndPop(path2,threshold);
-        if (path3 != "") rt.Add(path3);
-        var path4 = EliminateNearsAndPop(path3,threshold);
-        if (path4 != "") rt.Add(path4);
+        // いい感じに選んだ画像パスを追加
+        var balancedPaths = new List<string> {path1};
+
+        // いい感じに選んだ画像パスを追加
+        string path2 = EliminateNearsAndPop(path1,threshold);
+        if (path2 != "") balancedPaths.Add(path2);
+        string path3 = EliminateNearsAndPop(path2,threshold);
+        if (path3 != "") balancedPaths.Add(path3);
+        string path4 = EliminateNearsAndPop(path3,threshold);
+        if (path4 != "") balancedPaths.Add(path4);
         
-        return rt;
+        return balancedPaths;
     }
 
-    public void PrintPaths()
+    public void PrintBalancedPaths()
     {
-        foreach (var path in _paths)
+        foreach (var path in _orderedSet)
         {
             Console.WriteLine(path);
         }
     }
-    
-    
 }

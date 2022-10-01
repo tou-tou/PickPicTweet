@@ -1,11 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Drawing;
 using Microsoft.Extensions.Configuration;
 using PickPicTweet;
 
 // 実行時引数の処理
 // --full-path 
-// --is-everyday-dir
+// --every-dir
 // --pic-pool-count
 // --no-tweet
 var argIndexFullPath = Array.IndexOf(args, "--full-path");
@@ -16,7 +17,7 @@ var argIndexNoTweet = Array.IndexOf(args, "--no-tweet");
 /*
  * 設定ファイルの読み込み
  */
-var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 /*
  * 画像を含むソースディレクトリを指定
@@ -55,7 +56,7 @@ if (flag3)
 }
 
 // サブディレクトリを含むすべてのpngファイルパスを取得して作成日で並び替え
-var filePaths = Directory.GetFiles(sourceDir, "*.png", SearchOption.AllDirectories)
+List<string> filePaths = Directory.GetFiles(sourceDir, "*.png", SearchOption.AllDirectories)
  .Where(filePath => true /* 特定のファイルは除く */).OrderBy(filePath => File.GetCreationTime(filePath).Date).Reverse().ToList();
 
 filePaths = filePaths.GetRange(0, fileCount);
@@ -65,7 +66,7 @@ var outputPath = @"output_path.txt";
 var postPaths = new List<string>();
 
 if (!File.Exists(outputPath)) using (File.Create(outputPath)){}
-using (var  sr = new StreamReader(outputPath))
+using (StreamReader  sr = new StreamReader(outputPath))
 {
  string line;
  while ((line = sr.ReadLine()) != null)
@@ -74,7 +75,7 @@ using (var  sr = new StreamReader(outputPath))
  }
 }
 // 最近投稿した画像パスを削除
-foreach (var path in postPaths)
+foreach (string path in postPaths)
 {
  filePaths.Remove(path);
 }
@@ -84,18 +85,18 @@ foreach (var path in postPaths)
  */
 var sbp = new SelectBalancedPic(filePaths);
 // さらに類似画像を弾きたい場合は、Pickの引数:thresholdを大きくする(最大64)
-var balancedPics =sbp.Pick(20);
+List<string> balancedPics =sbp.Pick(20);
 
 /*
  * ツイート
  */
-var tw = new Twitter(config["ConsumerKey"],config["ConsumerKeySecret"],config["AccessToken"],config["AccessTokenSecret"]);
+Twitter tw = new Twitter(config["ConsumerKey"],config["ConsumerKeySecret"],config["AccessToken"],config["AccessTokenSecret"]);
 //tw.TextTweet("test from c#");
 // 画像付きツイート
 var flag4 =  argIndexNoTweet > 0 && argIndexNoTweet + 1 < args.Length && args[argIndexNoTweet+1]=="1";
 if (flag4)
 {
- foreach (var pic in balancedPics)
+ foreach (string pic in balancedPics)
  {
   Console.WriteLine(pic);
  }
@@ -113,9 +114,9 @@ else
 postPaths.AddRange(balancedPics);
 if (postPaths.Count > 100) postPaths = postPaths.GetRange(postPaths.Count - 100, 100);
 // テキストをすべて上書き
-using (var writer=new StreamWriter(@"output_path.txt",false))
+using (StreamWriter writer = new StreamWriter(@"output_path.txt",false))
 {
- foreach (var path in postPaths)
+ foreach (string path in postPaths)
  {
   writer.WriteLine(path);
  }
@@ -125,8 +126,9 @@ using (var writer=new StreamWriter(@"output_path.txt",false))
 /*
  * 以下動作確認用のコード
  */
- 
-//Console.WriteLine(args[0]);
+
+// Console.WriteLine(args[0]);
+// var prjPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Directory.GetCurrentDirectory())));
 // var path1 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_00-05-08.406.png");
 // var path2 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_23-04-43.397.png");
 // var path3 = Path.GetFullPath(prjPath + @"\SamplePic\VRChat_1920x1080_2022-07-01_23-04-44.848.png");
@@ -140,4 +142,3 @@ using (var writer=new StreamWriter(@"output_path.txt",false))
 // var result2 = ps.ComputeHammingDistance(img2, img3);
 // Console.WriteLine(result1);
 // Console.WriteLine(result2);
-
