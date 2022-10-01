@@ -8,6 +8,8 @@ Windowsのタスクスケジューラーで実行ファイルを登録すると�
   - できるだけ最近撮影した写真を選びます
   - 過去に選ばれた写真は除かれます
   - [dHash](https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html) を用いた画像類似度を計算し、似ている写真は投稿写真から除かれます
+  - secretフォルダ直下の写真は選ばれない
+    - 手動でsecretフォルダを作成し、その直下に選びたくない写真を予め入れておく必要があります
 - TwitterAPI用のトークンを利用してTweetする
 # 環境
 - Windows10
