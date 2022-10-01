@@ -6,7 +6,7 @@ using PickPicTweet;
 
 // 実行時引数の処理
 // --full-path 
-// --is-everyday-dir
+// --every-dir
 // --pic-pool-count
 // --no-tweet
 var argIndexFullPath = Array.IndexOf(args, "--full-path");

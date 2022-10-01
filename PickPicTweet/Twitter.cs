@@ -58,7 +58,7 @@ public class Twitter
     /// <param name="paths"></param>
     public void ImageTweet(string text, List<string> paths)
     {
-        //画像をアップロードして帰ってきたmedia_idを追加する
+        //画像をアップロードして返ってきたmedia_idを追加する
         List<long> mediaIds = paths.Select(UploadImage).ToList();
         Token.Statuses.Update(new
         {

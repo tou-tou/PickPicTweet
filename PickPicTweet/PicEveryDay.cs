@@ -43,6 +43,12 @@ public class PicEveryDay
         return false;
     }
 
+    private bool isAllowedFileExtension(string extension)
+    {
+        var list = new List<string>() {".png", ".jpg", ".jpeg",".gif"};
+        return list.Contains(extension);
+    }
+
     private enum DistDateFormat
     {
         Month,
@@ -60,12 +66,12 @@ public class PicEveryDay
         Func<string, bool> isDir; 
         if (dateFormat == DistDateFormat.Month)
         {
-            format = "yyyy-MM-dd";
+            format = "yyyy-MM";
             isDir = IsMonth;
         }
         else if(dateFormat == DistDateFormat.Date)
         {
-            format = "yyyy-MM";
+            format = "yyyy-MM-dd";
             isDir = IsDate;
         }
         else
@@ -78,7 +84,7 @@ public class PicEveryDay
             foreach (string currentFile in files)
             {
                 FileInfo fileInfo = new FileInfo(currentFile);
-                if (fileInfo.Extension != ".png") continue;
+                if (!isAllowedFileExtension(fileInfo.Extension)) continue;
                 var destDir = sourceDirectory + "\\" + fileInfo.CreationTime.ToString(format);
                 var destFilePath = destDir + "\\" + fileInfo.Name;
                 // ディレクトリが存在し、かつ名前に月・日付が含まれている場合
